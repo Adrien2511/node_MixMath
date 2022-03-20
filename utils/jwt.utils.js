@@ -6,7 +6,7 @@ module.exports = {
     generateTokenForUser: function(userData){
         return jwt.sign({
             userId : userData.id,
-            isadmin : userData.isadmin
+            isAdmin : userData.isAdmin
         },
         JWT_SIGN_SECRET,
         {
@@ -29,5 +29,18 @@ module.exports = {
             } catch(err) { }
         }
         return userId;
+    },
+
+    getUserAdmin: function(authorization) {
+        var userAdmin = false;
+        var token = module.exports.parseAuthorization(authorization);
+        if(token != null) {
+            try {
+                var jwtToken = jwt.verify(token, JWT_SIGN_SECRET);
+                if(jwtToken != null)
+                    userAdmin = jwtToken.isAdmin;
+            } catch(err) { }
+        }
+        return userAdmin;
     }
 }

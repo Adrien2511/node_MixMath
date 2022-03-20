@@ -8,13 +8,15 @@ const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"
 
 //fonction
 module.exports = {
+    // focntion d'enregistrement 
     register: function(req,res){
         
         //variables
         var email = req.body.email;
         var name = req.body.name;
         var firstName = req.body.firstName;
-        var password = req.body.password
+        var password = req.body.password;
+        var isAdmin = req.body.isAdmin;
 
         //vérification de la bonne forme
         if (email == null || name == null || password == null || firstName == null) {
@@ -55,7 +57,7 @@ module.exports = {
                     name : name,
                     firstName : firstName,
                     password: bcryptedPassword,
-                    isAdmin: 0
+                    isAdmin: isAdmin
                 })
                     .then(function (newUser) {
                         done(newUser);
@@ -76,7 +78,7 @@ module.exports = {
 
 
     },
-
+// fonction de connexion 
     login: (req, res) => {
         var email = req.body.email
         var password = req.body.password
@@ -125,6 +127,34 @@ module.exports = {
                 return res.status(500).json({ 'error': 'cannot log on user' });
             }
         })
+    },
 
+    gatAllProfile: function(req,res)
+    {
+       const test = models.User.findAll(
+            {
+               
+                    //attributes: ['id']
+
+                
+            }
+        )
+        .then(function(user){
+            res.status(200).send(user);
+            let listId = []
+            for (let i=0; i<user.length;i++){
+                console.log(user[i].dataValues.id)
+                listId.push(user[i].dataValues.id)
+            }
+            console.log(listId)
+
+          
+           
+
+        })
+        .catch(function(err){
+            res.json(err);
+        })
+       
     }
 }
