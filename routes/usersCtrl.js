@@ -155,11 +155,12 @@ module.exports = {
 
     gatAllProfileClass: function(req,res)
     {
+        var classId = parseInt(req.params.classId);
         asyncLib.waterfall([
             function (done)
             {
                 models.InClass.findAll({
-                    where:{ classId : 1}
+                    where:{ classId : classId}
                 })
                     .then(function (useFound){
                         //res.send(useFound)

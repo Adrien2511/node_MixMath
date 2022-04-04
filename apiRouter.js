@@ -10,7 +10,7 @@ const apiRouter = express.Router()
 apiRouter.post('/users/register',usersCtrl.register);
 apiRouter.post('/users/login/',usersCtrl.login);
 apiRouter.get('/users/all',usersCtrl.gatAllProfile);
-apiRouter.get('/users/allClass',usersCtrl.gatAllProfileClass);
+apiRouter.get('/users/allClass/:classId',usersCtrl.gatAllProfileClass);
 
 //class
 apiRouter.post('/class/register',classCtrl.register);
