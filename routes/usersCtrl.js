@@ -135,8 +135,6 @@ module.exports = {
             {
                
                     //attributes: ['id']
-
-                
             }
         )
         .then(function(user){
@@ -148,13 +146,61 @@ module.exports = {
             }
             console.log(listId)
 
-          
-           
-
         })
         .catch(function(err){
             res.json(err);
         })
        
+    },
+
+    gatAllProfileClass: function(req,res)
+    {
+        asyncLib.waterfall([
+            function (done)
+            {
+                models.InClass.findAll({
+                    where:{ classId : 1}
+                })
+                    .then(function (useFound){
+                        //res.send(useFound)
+                        console.log(useFound)
+                        done(null,useFound)
+
+                    })
+                    .catch(function (err){
+                        return res.status(500).json({ 'error': 'unable to verify user' });
+                    })
+            },
+            function ( useFound,done)
+            {   console.log(useFound)
+                let listId = []
+                for (let i=0; i<useFound.length;i++){
+                    console.log(useFound[i].dataValues.userId)
+                    listId.push(useFound[i].dataValues.userId)
+                }
+                console.log(listId)
+                models.User.findAll(
+                    {
+
+                        where:{id : listId}
+                    }
+                )
+                    .then(function(user){
+                        res.status(200).send(user);
+                        let listId = []
+                        for (let i=0; i<user.length;i++){
+                            console.log(user[i].dataValues.id)
+                            listId.push(user[i].dataValues.id)
+                        }
+                        console.log(listId)
+
+                    })
+                    .catch(function(err){
+                        res.json(err);
+                    })
+            }
+
+        ])
+
     }
 }
