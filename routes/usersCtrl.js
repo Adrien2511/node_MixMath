@@ -2,6 +2,7 @@ var bcrypt = require('bcrypt');
 var models = require('../models');
 var asyncLib = require('async');
 var jwtUtils = require('../utils/jwt.utils');
+const { Op } = require("sequelize");
 
 //constante
 const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -9,8 +10,8 @@ const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"
 //fonction
 module.exports = {
     // focntion d'enregistrement 
-    register: function(req,res){
-        
+    register: function (req, res) {
+
         //variables
         var email = req.body.email;
         var name = req.body.name;
@@ -54,8 +55,8 @@ module.exports = {
             function (userFound, bcryptedPassword, done) {
                 var newUser = models.User.create({
                     email: email,
-                    name : name,
-                    firstName : firstName,
+                    name: name,
+                    firstName: firstName,
                     password: bcryptedPassword,
                     isAdmin: isAdmin
                 })
@@ -88,94 +89,93 @@ module.exports = {
         }
 
         asyncLib.waterfall([
-            function (done)
-            {
+            function (done) {
                 models.User.findOne({
-                    where:{ email : email}
+                    where: {email: email}
                 })
-                    .then(function (useFound){
-                        done(null,useFound)
+                    .then(function (useFound) {
+                        done(null, useFound)
                     })
-                    .catch(function (err){
-                        return res.status(500).json({ 'error': 'unable to verify user' });
+                    .catch(function (err) {
+                        return res.status(500).json({'error': 'unable to verify user'});
                     })
             },
-            function (userFound,done)
-            {
-                if(userFound){
-                    bcrypt.compare(password, userFound.password, function(errBycrypt, resBycrypt) {
+            function (userFound, done) {
+                if (userFound) {
+                    bcrypt.compare(password, userFound.password, function (errBycrypt, resBycrypt) {
                         done(null, userFound, resBycrypt);
                     });
-                }else {
-                    return res.status(404).json({ 'error': 'user not exist in DB' });
+                } else {
+                    return res.status(404).json({'error': 'user not exist in DB'});
                 }
             },
-            function(userFound, resBycrypt, done) {
-                if(resBycrypt) {
+            function (userFound, resBycrypt, done) {
+                if (resBycrypt) {
                     done(userFound);
                 } else {
-                    return res.status(403).json({ 'error': 'invalid password' });
+                    return res.status(403).json({'error': 'invalid password'});
                 }
             }
-        ],function(userFound) {
+        ], function (userFound) {
             if (userFound) {
                 return res.status(201).json({
                     'userId': userFound.id,
                     'token': jwtUtils.generateTokenForUser(userFound)
                 });
             } else {
-                return res.status(500).json({ 'error': 'cannot log on user' });
+                return res.status(500).json({'error': 'cannot log on user'});
             }
         })
     },
 
-    gatAllProfile: function(req,res)
-    {
-       const test = models.User.findAll(
+    gatAllProfile: function (req, res) {
+        const test = models.User.findAll(
             {
-               
-                    //attributes: ['id']
+
+                //attributes: ['id']
+                /*where: {
+                    id: { [Op.not]: '1'}
+
+                }*/
             }
         )
-        .then(function(user){
-            res.status(200).send(user);
-            let listId = []
-            for (let i=0; i<user.length;i++){
-                console.log(user[i].dataValues.id)
-                listId.push(user[i].dataValues.id)
-            }
-            console.log(listId)
+            .then(function (user) {
+                res.status(200).send(user);
+                let listId = []
+                for (let i = 0; i < user.length; i++) {
 
-        })
-        .catch(function(err){
-            res.json(err);
-        })
-       
+                    listId.push(user[i].dataValues.id)
+                }
+
+
+            })
+            .catch(function (err) {
+                res.json(err);
+            })
+
     },
 
-    gatAllProfileClass: function(req,res)
-    {
+    gatAllProfileClass: function (req, res) {
         var classId = parseInt(req.params.classId);
         asyncLib.waterfall([
-            function (done)
-            {
+            function (done) {
                 models.InClass.findAll({
-                    where:{ classId : classId}
+                    where: {classId: classId}
                 })
-                    .then(function (useFound){
+                    .then(function (useFound) {
                         //res.send(useFound)
                         console.log(useFound)
-                        done(null,useFound)
+                        done(null, useFound)
 
                     })
-                    .catch(function (err){
-                        return res.status(500).json({ 'error': 'unable to verify user' });
+                    .catch(function (err) {
+                        return res.status(500).json({'error': 'unable to verify user'});
                     })
             },
-            function ( useFound,done)
-            {   console.log(useFound)
+            function (useFound, done) {
+                console.log(useFound)
                 let listId = []
-                for (let i=0; i<useFound.length;i++){
+                for (let i = 0; i < useFound.length; i++) {
                     console.log(useFound[i].dataValues.userId)
                     listId.push(useFound[i].dataValues.userId)
                 }
@@ -183,20 +183,20 @@ module.exports = {
                 models.User.findAll(
                     {
 
-                        where:{id : listId}
+                        where: {id: listId}
                     }
                 )
-                    .then(function(user){
+                    .then(function (user) {
                         res.status(200).send(user);
                         let listId = []
-                        for (let i=0; i<user.length;i++){
+                        for (let i = 0; i < user.length; i++) {
                             console.log(user[i].dataValues.id)
                             listId.push(user[i].dataValues.id)
                         }
                         console.log(listId)
 
                     })
-                    .catch(function(err){
+                    .catch(function (err) {
                         res.json(err);
                     })
             }

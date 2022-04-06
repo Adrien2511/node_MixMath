@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      models.Message.belongsTo(models.User,{
+      models.Reply.belongsTo(models.User,{
         foreignKey:{
           allowNull : false
         }
@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Reply.init({
-    userId: DataTypes.INTEGER,
+
     idAdversaire: DataTypes.INTEGER,
     idDuel: DataTypes.INTEGER
   }, {
