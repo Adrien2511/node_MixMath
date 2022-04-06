@@ -3,6 +3,7 @@ var usersCtrl = require('./routes/usersCtrl')
 var classCtrl = require('./routes/classCtrl')
 var duelCtrl = require('./routes/duelCtrl')
 var replyCtrl = require('./routes/replyCtrl')
+var playerCtrl = require('./routes/playerCtrl')
 
 const apiRouter = express.Router()
 
@@ -23,5 +24,8 @@ apiRouter.get('/duel', duelCtrl.Duel);
 
 //reply
 apiRouter.get('/reply/all',replyCtrl.getAllReply);
+
+//player
+apiRouter.post('/player/create',playerCtrl.create);
 
 module.exports = apiRouter
