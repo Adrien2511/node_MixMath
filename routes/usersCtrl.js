@@ -129,25 +129,13 @@ module.exports = {
     },
 
     gatAllProfile: function (req, res) {
-        const test = models.User.findAll(
-            {
-
-                //attributes: ['id']
-                /*where: {
-                    id: { [Op.not]: '1'}
-
-                }*/
-            }
-        )
+        const test = models.User.findAll({})
             .then(function (user) {
                 res.status(200).send(user);
                 let listId = []
                 for (let i = 0; i < user.length; i++) {
-
                     listId.push(user[i].dataValues.id)
                 }
-
-
             })
             .catch(function (err) {
                 res.json(err);
@@ -157,32 +145,28 @@ module.exports = {
 
     gatAllProfileClass: function (req, res) {
         var classId = parseInt(req.params.classId);
+        var headerAuth = req.headers['authorization'];
+        var userId = jwtUtils.getUserId(headerAuth);
         asyncLib.waterfall([
             function (done) {
                 models.InClass.findAll({
-                    where: {classId: classId}
+                    where: {classId: classId,userId: { [Op.not]: userId}}
                 })
                     .then(function (useFound) {
-                        //res.send(useFound)
-                        console.log(useFound)
                         done(null, useFound)
-
                     })
                     .catch(function (err) {
                         return res.status(500).json({'error': 'unable to verify user'});
                     })
             },
             function (useFound, done) {
-                console.log(useFound)
                 let listId = []
                 for (let i = 0; i < useFound.length; i++) {
                     console.log(useFound[i].dataValues.userId)
                     listId.push(useFound[i].dataValues.userId)
                 }
-                console.log(listId)
                 models.User.findAll(
                     {
-
                         where: {id: listId}
                     }
                 )
@@ -190,11 +174,8 @@ module.exports = {
                         res.status(200).send(user);
                         let listId = []
                         for (let i = 0; i < user.length; i++) {
-                            console.log(user[i].dataValues.id)
                             listId.push(user[i].dataValues.id)
                         }
-                        console.log(listId)
-
                     })
                     .catch(function (err) {
                         res.json(err);

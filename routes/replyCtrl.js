@@ -66,33 +66,27 @@ module.exports = {
                 res.send(vecRes)
 
             }
-/*
-                        let vecRes = []
-                        for (let i=0; i<replyFound.length; i++)
-                        {
-                            //replyFound[i].push(userFound[i].dataValues.firstName)
-                            models.User.findOne({
-                                where:{id:replyFound[i].dataValues.idAdversaire}
-                            }).then(function (userFound){
-                               var json = {firstname : userFound[i].dataValues.firstName,
-                                    id : replyFound[i].dataValues.id,
-                                    idDuel : replyFound[i].dataValues.idDuel,
-                                    UserId : replyFound[i].dataValues.idAdversaire,}
-                                vecRes.push(json)
-                                console.log(vecRes)
-
-                            })
-                                .catch(function (err){console.log(err)})
-
-                        }
-                        console.log(vecRes)
-                        res.send(vecRes)
-                        res.send(userFound)*/
-
-
-
-
 
             ])
+    },
+
+    delete : function (req,res)
+    {
+        var headerAuth = req.headers['authorization'];
+        var userId = jwtUtils.getUserId(headerAuth);
+
+        var replyId = parseInt(req.params.replyId);
+
+
+        models.Reply.destroy({
+            where:{id:replyId}
+        })
+            .then(function(replySupp){
+                res.send(replySupp)
+            })
+            .catch(function (err){
+                console.log(err)
+            })
+        //res.send(replyId)
     }
 }
