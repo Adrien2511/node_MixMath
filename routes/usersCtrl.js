@@ -119,35 +119,33 @@ module.exports = {
         ], function (userFound) {
             if (userFound) {
                 return res.status(201).json({
-                    'userId': userFound.id,
-                    'token': jwtUtils.generateTokenForUser(userFound)
+                    'id': userFound.id,
+                    'token': jwtUtils.generateTokenForUser(userFound),
+                    'isAdmin' : userFound.isAdmin
                 });
             } else {
                 return res.status(500).json({'error': 'cannot log on user'});
             }
         })
     },
-
+   // tout les profils
     gatAllProfile: function (req, res) {
-        const test = models.User.findAll({})
+        models.User.findAll({})
             .then(function (user) {
                 res.status(200).send(user);
-                let listId = []
-                for (let i = 0; i < user.length; i++) {
-                    listId.push(user[i].dataValues.id)
-                }
             })
             .catch(function (err) {
                 res.json(err);
             })
 
     },
-
+    //obtenir tout les profils de la classe
     gatAllProfileClass: function (req, res) {
         var classId = parseInt(req.params.classId);
         var headerAuth = req.headers['authorization'];
         var userId = jwtUtils.getUserId(headerAuth);
         asyncLib.waterfall([
+            //les id des personnes dans la classe
             function (done) {
                 models.InClass.findAll({
                     where: {classId: classId,userId: { [Op.not]: userId}}
@@ -159,23 +157,20 @@ module.exports = {
                         return res.status(500).json({'error': 'unable to verify user'});
                     })
             },
+            //obtenir le profil des personnes de la classe
             function (useFound, done) {
                 let listId = []
                 for (let i = 0; i < useFound.length; i++) {
-                    console.log(useFound[i].dataValues.userId)
                     listId.push(useFound[i].dataValues.userId)
                 }
                 models.User.findAll(
                     {
-                        where: {id: listId}
+                        where: {id: listId},
+                        attributes: [ 'id','firstName','name','email','isAdmin' ]
                     }
                 )
                     .then(function (user) {
                         res.status(200).send(user);
-                        let listId = []
-                        for (let i = 0; i < user.length; i++) {
-                            listId.push(user[i].dataValues.id)
-                        }
                     })
                     .catch(function (err) {
                         res.json(err);

@@ -19,6 +19,7 @@ module.exports=
             if(userAdmin)
             {
                 asyncLib.waterfall([
+                    //création de la classe
                     function(done) {
                         //création de la classe
                         models.Class.create(
@@ -36,6 +37,7 @@ module.exports=
                                 res.json(err);
                             })
                     },
+                    //ajout de la personne à la classe
                     function (classe,done)
                     {
                         models.InClass.create({
@@ -43,7 +45,7 @@ module.exports=
                             classId: classe.id
                         })
                             .then(function(newInClass) {
-                                console.log(newInClass)
+
                             })
                             .catch(function(err){
                                 console.log(err)
@@ -51,12 +53,13 @@ module.exports=
                     }
                     ])
             }
+            //si la personne n'est pas un prof
             else
             {
                 res.status(400).json({'erro': 'pas le droit'})
             }
         },
-
+        // pour rejoindre une classe
         join:function (req,res)
         {
             var headerAuth  = req.headers['authorization'];

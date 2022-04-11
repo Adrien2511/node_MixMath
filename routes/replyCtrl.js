@@ -3,23 +3,21 @@ var jwtUtils = require('../utils/jwt.utils');
 var asyncLib = require('async');
 
 module.exports = {
-
+    //obtenir tout les personnes à qui répondre un duel
     getAllReply : function (req,res){
         var headerAuth = req.headers['authorization'];
         var userId = jwtUtils.getUserId(headerAuth);
 
         asyncLib.waterfall([
+            //obtenir tout les reply de la personne
             function(done)
             {
                 models.Reply.findAll({
                     where : {UserId : userId}
-
                 })
                     .then(function (replyFound)
                     {
-
                         done(null,replyFound)
-                        //res.send(replyFound)
                     })
                     .catch(function (err){
                         console.log(err)
@@ -27,11 +25,13 @@ module.exports = {
             },
 
             function(replyFound,done) {
+                //les id de tout les adversaires
                 let listId = []
                 for (let i = 0; i < replyFound.length; i++) {
                     listId.push(replyFound[i].dataValues.idAdversaire)
                 }
                 console.log(listId)
+                //trouver tout les profils des adversaires
                 models.User.findAll({
                     where: {id: listId}
                 })
@@ -43,6 +43,7 @@ module.exports = {
                         console.log(err)
                     })
             },
+            // associer le nom de l'adversaire avec le reply
             function(replyFound,userFound,done)
             { let vecRes = []
                 for (let i=0; i<replyFound.length; i++)
@@ -59,17 +60,12 @@ module.exports = {
                            vecRes.push(json)
                        }
                    }
-
-
                 }
-                console.log(vecRes)
                 res.send(vecRes)
-
             }
-
             ])
     },
-
+    //supprimer un reply selon l'id
     delete : function (req,res)
     {
         var headerAuth = req.headers['authorization'];
@@ -87,6 +83,5 @@ module.exports = {
             .catch(function (err){
                 console.log(err)
             })
-        //res.send(replyId)
     }
 }

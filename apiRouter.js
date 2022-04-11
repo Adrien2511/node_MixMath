@@ -20,8 +20,8 @@ apiRouter.post('/class/join', classCtrl.join);
 apiRouter.get('/class/all',classCtrl.getAllClass);
 
 //duel
-apiRouter.post('/duel/create', duelCtrl.createDuel);
 apiRouter.get('/duel', duelCtrl.Duel);
+apiRouter.get('/duel/all',duelCtrl.getAllDuel);
 
 //reply
 apiRouter.get('/reply/all',replyCtrl.getAllReply);

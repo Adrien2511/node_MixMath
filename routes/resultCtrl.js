@@ -12,6 +12,7 @@ module.exports = {
         var userId = jwtUtils.getUserId(headerAuth);
 
         asyncLib.waterfall([
+            //obtenir toutes les parties de la personne
             function (done)
             {
                 models.Player.findAll({
@@ -27,12 +28,13 @@ module.exports = {
                     })
             },
             function (playerFound,done)
-            {
+            {   //list des id des duels
                 listDuelId = []
                 for(let i = 0; i<playerFound.length;i++)
                 {
                     listDuelId.push(playerFound[i].dataValues.DuelId)
                 }
+                // partie joué par tout les adversaires de la personne
                 models.Player.findAll({
                     where:{ UserId: { [Op.not]: userId}, DuelId : listDuelId},
                     include: [{
@@ -58,11 +60,12 @@ module.exports = {
                 let vecRes = []
                 for(let i=0;i<playerFound.length;i++)
                 {
+                  var ajout = Boolean(false)
 
                     for(let j=0;j<adversairePlayer.length;j++) {
                         if(adversairePlayer[j].dataValues.DuelId == playerFound[i].dataValues.DuelId) {
 
-
+                            ajout = true
                             var json = {
                                 player: playerFound[i].dataValues,
                                 adversaire : adversairePlayer[j].dataValues
@@ -70,13 +73,23 @@ module.exports = {
                             vecRes.push(json)
                         }
                     }
+                  if(ajout == false)
+                  {
+                      var json = {
+                          player: playerFound[i].dataValues,
+                          adversaire : "pas encore joué"
+                      }
+                      vecRes.push(json)
+
+                  }
+
                 }
                 res.send(vecRes)
             }
 
         ])
     },
-
+    // les resultats de tout le monde
     allResult : function (req,res)
     {
 

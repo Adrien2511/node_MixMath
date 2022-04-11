@@ -6,20 +6,17 @@ var asyncLib = require('async');
 
 module.exports = {
 
-    createDuel: function (req, res) {
-        models.Duel.create(
-            {
-                idQuestion: 1
-            }
-        )
-    },
+
 
     Duel: function (req, res) {
         var headerAuth = req.headers['authorization'];
         var userId = jwtUtils.getUserId(headerAuth);
 
+        var idQuestion = req.body.idQuestion;
+
         asyncLib.waterfall([
-            function (done) { // touver la classe de la personne
+            // touver la classe de la personne
+            function (done) {
                 models.InClass.findOne({
                     where: {userId: userId}
                 })
@@ -29,9 +26,9 @@ module.exports = {
                     .catch(function (err) {
                         console.log(err)
                     })
-
             },
-            function (classe, done) {  // trouver toute les personnes de la classe
+            // trouver toute les personnes de la classe
+            function (classe, done) {
                 models.InClass.findAll({
                     where: {classId: classe.classId}
                 })
@@ -42,15 +39,14 @@ module.exports = {
                         return res.status(500).json({'error': 'Personne dans la classe'});
                     })
             },
-
-            function (userClass, done) {   // enregister tout les personnes de la class
+            // enregister tout les personnes de la classe
+            function (userClass, done) {
+                //obtenir tout les id des personnes de la classe
                 let listId = []
                 for (let i = 0; i < userClass.length; i++) {
                     listId.push(userClass[i].dataValues.userId)
                 }
-                console.log("toute les personnes " + listId)
-
-
+                //trouver toutes les personnes de la classe et pas prof
                 models.User.findAll({
                     where: {id: listId, isAdmin: false}
                 })
@@ -66,7 +62,6 @@ module.exports = {
                 for (let i = 0; i < userNotAdmin.length; i++) {
                     listId.push(userNotAdmin[i].dataValues.id)
                 }
-
                 // supprimer soit même
                 for (var i = 0; i < listId.length; i++) {
                     if (listId[i] === userId) {
@@ -76,11 +71,10 @@ module.exports = {
 
                 // choix de l'adversaire aléatoire
                 const adversaireId = listId[Math.floor(Math.random() * listId.length)];
-                console.log(adversaireId)
 
                 models.Duel.create(
                     {
-                        idQuestion: 1
+                        idQuestion: idQuestion
                     }
                 )
                     .then(function (duel){
@@ -88,11 +82,9 @@ module.exports = {
                     })
                     .catch(function (err){console.log(err)})
 
-
             },
             function (duel,adversaireId,done)
-            {  console.log("verif "+adversaireId)
-
+            {
                 models.Reply.create({
 
                     UserId: adversaireId,
@@ -100,13 +92,27 @@ module.exports = {
                     idDuel : duel.id
                 })
                     .then(function (reply){
-                        res.send(reply)
+                        //res.send(reply)
+                        var json = { duelId : duel.dataValues.id}
+                        res.send(json)
                     })
                     .catch(function (err){console.log(err)})
 
             }
 
         ])
+
+    },
+
+    getAllDuel : function (req,res)
+    {
+        models.Duel.findAll()
+            .then(function (allDuel){
+                res.send(allDuel)
+            })
+            .catch(function (err){
+                console.log(err)
+            })
 
     }
 
