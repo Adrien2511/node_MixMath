@@ -43,8 +43,28 @@ module.exports = {
                         console.log(err)
                     })
             },
+            function (replyFound,userFound,done)
+            {
+                let listIdDuel = []
+                for (let i = 0; i < replyFound.length; i++) {
+                    listIdDuel.push(replyFound[i].dataValues.idDuel)
+                }
+                console.log(listIdDuel)
+                //trouver tout les profils des adversaires
+                models.Duel.findAll({
+                    where: {id: listIdDuel}
+                })
+                    .then(function (duelFound) {
+                        //res.send(userFound)
+                        done(null, replyFound, userFound,duelFound)
+                    })
+                    .catch(function (err) {
+                        console.log(err)
+                    })
+
+            },
             // associer le nom de l'adversaire avec le reply
-            function(replyFound,userFound,done)
+            function(replyFound,userFound,duelFound,done)
             { let vecRes = []
                 for (let i=0; i<replyFound.length; i++)
                 {
@@ -52,13 +72,18 @@ module.exports = {
                    for(let j=0; j<userFound.length;j++)
                    {
                        if(userFound[j].dataValues.id == replyFound[i].dataValues.idAdversaire)
-                       {
-                           var json = {firstname : userFound[j].dataValues.firstName,
-                               id : replyFound[i].dataValues.id,
-                               idDuel : replyFound[i].dataValues.idDuel,
-                               idAdversaire : replyFound[i].dataValues.idAdversaire,}
-                           vecRes.push(json)
-                       }
+                       for(let k=0; k<duelFound.length; k++){
+                           if(duelFound[k].dataValues.id == replyFound[i].dataValues.idDuel)
+                               {
+                                   var json = {firstName : userFound[j].dataValues.firstName,
+                                       id : replyFound[i].dataValues.id,
+                                       idDuel : replyFound[i].dataValues.idDuel,
+                                       idAdversaire : replyFound[i].dataValues.idAdversaire,
+                                       idQuestion : duelFound[k].dataValues.idQuestion}
+                                   vecRes.push(json)
+                               }
+
+                               }
                    }
                 }
                 res.send(vecRes)

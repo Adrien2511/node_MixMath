@@ -13,6 +13,7 @@ module.exports = {
         var userId = jwtUtils.getUserId(headerAuth);
 
         var idQuestion = req.body.idQuestion;
+        console.log(req.body.idQuestion)
 
         asyncLib.waterfall([
             // touver la classe de la personne
