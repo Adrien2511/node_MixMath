@@ -33,5 +33,6 @@ apiRouter.post('/player/create',playerCtrl.create);
 //result
 apiRouter.get('/result/my',resultCtrl.myResult);
 apiRouter.get('/result/all',resultCtrl.allResult);
+apiRouter.get('/result/student/:userId',resultCtrl.studentResult);
 
 module.exports = apiRouter
