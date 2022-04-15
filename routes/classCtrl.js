@@ -86,6 +86,27 @@ module.exports=
                 {
                     if(classFound)
                     {
+                        models.InClass.findOne({
+                            where:{
+                            userId : userId,}
+                        })
+                            .then(function(UserFoundInCLass) {
+                                done(null,UserFoundInCLass,classFound);
+                            })
+                            .catch(function(err){
+                                console.log(err)
+                            });
+                    }
+                    else
+                    {
+                        res.status(404).json({ 'error': 'Class not found' });
+                    }
+
+                },
+                function (UserFoundInCLass,classFound,done)
+                {
+                    if(!UserFoundInCLass)
+                    {
                         models.InClass.create({
                             userId : userId,
                             classId: classFound.id
@@ -99,7 +120,27 @@ module.exports=
                     }
                     else
                     {
-                        res.status(404).json({ 'error': 'Class not found' });
+                        models.InClass.destroy({
+                            where:{
+                            userId : userId,
+                            classId: UserFoundInCLass.classId}
+                        })
+                            .then(function(newInClass) {
+                                models.InClass.create({
+                                    userId : userId,
+                                    classId: classFound.id
+                                })
+                                    .then(function(newInClass) {
+                                        done(newInClass);
+                                    })
+                                    .catch(function(err){
+                                        console.log(err)
+                                    });
+                            })
+                            .catch(function(err){
+                                console.log(err)
+                            });
+
                     }
                 }
             ], function(newInClass) {
