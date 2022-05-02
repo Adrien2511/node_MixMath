@@ -18,6 +18,8 @@ apiRouter.get('/users/allClass/:classId', usersCtrl.gatAllProfileClass);
 apiRouter.post('/class/register', classCtrl.register);
 apiRouter.post('/class/join', classCtrl.join);
 apiRouter.get('/class/all',classCtrl.getAllClass);
+apiRouter.delete('/class/delete/student/:studentId/:classId',classCtrl.deleteStudent);
+apiRouter.delete('/class/delete/:classId',classCtrl.deleteClass)
 
 //duel
 apiRouter.post('/duel', duelCtrl.Duel);

@@ -6,7 +6,6 @@ module.exports = {
     create : function (req,res)
     {
         var headerAuth  = req.headers['authorization'];
-        var userAdmin      = jwtUtils.getUserAdmin(headerAuth);
         var userId      = jwtUtils.getUserId(headerAuth);
 
         var duelId= req.body.duelId;

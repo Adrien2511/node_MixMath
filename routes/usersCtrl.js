@@ -69,7 +69,7 @@ module.exports = {
             }
         ], function (newUser) {
             if (newUser) {
-                return res.status(201).json({
+                return res.status(200).json({
                     'userId': newUser.id
                 });
             } else {

@@ -145,7 +145,7 @@ module.exports=
                 }
             ], function(newInClass) {
                 if (newInClass) {
-                    return res.status(201).json(newInClass);
+                    return res.status(200).json(newInClass);
                 } else {
                     return res.status(500).json({ 'error': 'cannot post message' });
                 }
@@ -189,6 +189,65 @@ module.exports=
                         .catch(function (err){
                             console.log(err)
                         })
+                }
+            ])
+
+        },
+
+        deleteStudent : function(req,res)
+        {
+            
+
+            var studentId = parseInt(req.params.studentId);
+            var classId = parseInt(req.params.classId);
+
+
+            models.InClass.destroy({
+                where:{userId : studentId, classId : classId}
+            }).then(function(replySupp){
+                console.log("Supprimer")
+            })
+            .catch(function (err){
+                console.log(err)
+            })
+
+
+
+
+        },
+
+        deleteClass : function(req,res)
+        {
+            var classId = parseInt(req.params.classId);
+            models.Class.destroy({
+                where:{id: classId}
+            })
+
+            asyncLib.waterfall([
+                function (done){
+                    models.InClass.destroy({
+                        where: {classId: classId},
+
+                    })
+                        .then(function () {
+                            done(null)
+
+                        })
+                        .catch(function (err) {
+                            console.log(err)
+                        })
+                },
+                function (done)
+                {   
+                    models.Class.destroy({
+                        where : {id:classId}
+                    })
+                    .then(function(){
+                        res.send("ok")
+                    })
+                    .catch(function(err){
+                        console.log(err)
+                    })
                 }
             ])
 

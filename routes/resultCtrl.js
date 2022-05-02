@@ -131,13 +131,13 @@ module.exports = {
 
                       var jsonAdversaire ={
 
-                          score: "Pas encore joué",
+                          score: "...",
                           Q1: "Pas de réponse",
                           Q2: "Pas de réponse",
                           Q3: "Pas de réponse",
                           Q4: "Pas de réponse",
                           Q5: "Pas de réponse",
-                          firstName :"En attente"
+                          firstName :"..."
                       }
                       var json = {
                           player: jsonPlayer,

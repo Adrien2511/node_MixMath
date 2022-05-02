@@ -79,7 +79,8 @@ module.exports = {
                                        id : replyFound[i].dataValues.id,
                                        idDuel : replyFound[i].dataValues.idDuel,
                                        idAdversaire : replyFound[i].dataValues.idAdversaire,
-                                       idQuestion : duelFound[k].dataValues.idQuestion}
+                                       idQuestion : duelFound[k].dataValues.idQuestion,
+                                       date : replyFound[i].dataValues.createdAt}
                                    vecRes.push(json)
                                }
 
